@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public class Boid : MonoBehaviour
@@ -70,7 +69,7 @@ public class Boid : MonoBehaviour
         Vector3 steering = Vector3.zero;
         int total = 0;
 
-        foreach (Boid boid in GameController.Instance.GetBoids())
+        foreach (Boid boid in GameController.Instance.GetBoids3D())
         {
             if (boid != this)
             {
@@ -100,7 +99,7 @@ public class Boid : MonoBehaviour
         Vector3 steering = Vector3.zero;
         int total = 0;
 
-        foreach (Boid boid in GameController.Instance.GetBoids())
+        foreach (Boid boid in GameController.Instance.GetBoids3D())
         {
             if (boid != this)
             {
@@ -131,7 +130,7 @@ public class Boid : MonoBehaviour
         Vector3 steering = Vector3.zero;
         int total = 0;
 
-        foreach (Boid boid in GameController.Instance.GetBoids())
+        foreach (Boid boid in GameController.Instance.GetBoids3D())
         {
             if (boid != this)
             {
