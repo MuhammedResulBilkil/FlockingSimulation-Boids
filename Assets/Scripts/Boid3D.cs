@@ -1,13 +1,13 @@
 using UnityEngine;
 
-public class Boid2D : MonoBehaviour
+public class Boid3D : MonoBehaviour
 {
-    private Vector2 _velocity;
-    private Vector2 _acceleration;
+    private Vector3 _velocity;
+    private Vector3 _acceleration;
 
     private void Start()
     {
-        _velocity = Random.insideUnitCircle * Random.Range(1f, 4f);
+        _velocity = Random.insideUnitSphere * Random.Range(1f, 4f);
     }
 
     void Update()
@@ -16,36 +16,43 @@ public class Boid2D : MonoBehaviour
         Flock();
         MoveForward();
         
-        _acceleration = Vector2.zero;
+        _acceleration = Vector3.zero;
     }
 
     private void MoveForward()
     {
-        transform.position += (Vector3) _velocity;
+        transform.position += _velocity;
+        transform.rotation = Quaternion.LookRotation(_velocity.normalized);
+        
+        //Debug.DrawRay(transform.position, _velocity.normalized * 2f, Color.red);
         
         _velocity += _acceleration;
-        _velocity = Vector2.ClampMagnitude(_velocity, GetMaxSpeed());
-        //transform.rotation = Quaternion.LookRotation(_velocity.normalized + transform.forward);
+        _velocity = Vector3.ClampMagnitude(_velocity, GetMaxSpeed());
     }
 
     private void Edges()
     {
         if(transform.position.x > GetWidth())
-            transform.position = new Vector2(-GetWidth(), transform.position.y);
+            transform.position = new Vector3(-GetWidth(), transform.position.y);
         else if(transform.position.x < -GetWidth())
-            transform.position = new Vector2(GetWidth(), transform.position.y);
+            transform.position = new Vector3(GetWidth(), transform.position.y);
         
         if(transform.position.y > GetHeight()) 
-            transform.position = new Vector2(transform.position.x, -GetHeight());
+            transform.position = new Vector3(transform.position.x, -GetHeight());
         else if(transform.position.y < -GetHeight())
-            transform.position = new Vector2(transform.position.x, GetHeight());
+            transform.position = new Vector3(transform.position.x, GetHeight());
+        
+        if(transform.position.z > GetDepth()) 
+            transform.position = new Vector3(transform.position.x, transform.position.y, -GetDepth());
+        else if(transform.position.z < -GetDepth())
+            transform.position = new Vector3(transform.position.x, transform.position.y, GetDepth());
     }
 
     private void Flock()
     {
-        Vector2 alignment = Align();
-        Vector2 cohesion = Cohesion();
-        Vector2 separation = Separation();
+        Vector3 alignment = Align();
+        Vector3 cohesion = Cohesion();
+        Vector3 separation = Separation();
         
         alignment *= GetPowerAlignment();
         cohesion *= GetPowerCohesion();
@@ -56,20 +63,20 @@ public class Boid2D : MonoBehaviour
         _acceleration += separation;
     }
 
-    private Vector2 Align()
+    private Vector3 Align()
     {
-        Vector2 steering = Vector2.zero;
+        Vector3 steering = Vector3.zero;
         int total = 0;
 
-        foreach (Boid2D boid2D in GameController.Instance.GetBoids2D())
+        foreach (Boid3D boid3D in GameController.Instance.GetBoids3D())
         {
-            if (boid2D != this)
+            if (boid3D != this)
             {
-                float distance = Vector2.Distance(transform.position, boid2D.transform.position);
+                float distance = Vector3.Distance(transform.position, boid3D.transform.position);
 
                 if (distance < GetPerceptionRadiusAlignment())
                 {
-                    steering += boid2D.GetVelocity();
+                    steering += boid3D.GetVelocity();
                     total++;
                 }
             }
@@ -80,26 +87,26 @@ public class Boid2D : MonoBehaviour
             steering /= total;
             steering = steering.normalized * GetMaxSpeed();
             steering -= _velocity;
-            steering = Vector2.ClampMagnitude(steering, GetMaxForce());
+            steering = Vector3.ClampMagnitude(steering, GetMaxForce());
         }
 
         return steering;
     }
 
-    private Vector2 Cohesion()
+    private Vector3 Cohesion()
     {
-        Vector2 steering = Vector3.zero;
+        Vector3 steering = Vector3.zero;
         int total = 0;
 
-        foreach (Boid2D boid in GameController.Instance.GetBoids2D())
+        foreach (Boid3D boid3D in GameController.Instance.GetBoids3D())
         {
-            if (boid != this)
+            if (boid3D != this)
             {
-                float distance = Vector2.Distance(transform.position, boid.transform.position);
+                float distance = Vector3.Distance(transform.position, boid3D.transform.position);
 
                 if (distance < GetPerceptionRadiusCohesion())
                 {
-                    steering += (Vector2) boid.transform.position;
+                    steering += boid3D.transform.position;
                     total++;
                 }
             }
@@ -108,29 +115,29 @@ public class Boid2D : MonoBehaviour
         if (total > 0)
         {
             steering /= total;
-            steering -= (Vector2) transform.position;
+            steering -= transform.position;
             steering = steering.normalized * GetMaxSpeed();
             steering -= _velocity;
-            steering = Vector2.ClampMagnitude(steering, GetMaxForce());
+            steering = Vector3.ClampMagnitude(steering, GetMaxForce());
         }
 
         return steering;
     }
     
-    private Vector2 Separation()
+    private Vector3 Separation()
     {
-        Vector2 steering = Vector3.zero;
+        Vector3 steering = Vector3.zero;
         int total = 0;
 
-        foreach (Boid2D boid in GameController.Instance.GetBoids2D())
+        foreach (Boid3D boid3D in GameController.Instance.GetBoids3D())
         {
-            if (boid != this)
+            if (boid3D != this)
             {
-                float distance = Vector2.Distance(transform.position, boid.transform.position);
+                float distance = Vector3.Distance(transform.position, boid3D.transform.position);
 
                 if (distance <= GetPerceptionRadiusSeparation())
                 {
-                    Vector2 diff = transform.position - boid.transform.position;
+                    Vector3 diff = transform.position - boid3D.transform.position;
                     diff /= distance * distance;
                     steering += diff;
                     total++;
@@ -143,13 +150,13 @@ public class Boid2D : MonoBehaviour
             steering /= total;
             steering = steering.normalized * GetMaxSpeed();
             steering -= _velocity;
-            steering = Vector2.ClampMagnitude(steering, GetMaxForce());
+            steering = Vector3.ClampMagnitude(steering, GetMaxForce());
         }
 
         return steering;
     }
     
-    private Vector2 GetVelocity() => _velocity;
+    private Vector3 GetVelocity() => _velocity;
     private float GetMaxSpeed() => GameController.Instance.GetMaxSpeed();
     private float GetMaxForce() => GameController.Instance.GetMaxForce();
     private float GetPowerAlignment() => GameController.Instance.GetPowerAlignment();
@@ -160,4 +167,5 @@ public class Boid2D : MonoBehaviour
     private float GetPerceptionRadiusSeparation() => GameController.Instance.GetPerceptionRadiusSeparation();
     private float GetWidth() => GameController.Instance.GetWidth();
     private float GetHeight() => GameController.Instance.GetHeight();
+    private float GetDepth() => GameController.Instance.GetDepth();
 }
