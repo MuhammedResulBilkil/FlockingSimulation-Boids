@@ -16,6 +16,9 @@ public class UIController : MonoBehaviour
     [SerializeField] private Button _make3DButton;
     [SerializeField] private TextMeshProUGUI _make3DButtonText;
     
+    [SerializeField] private Slider _boidAmountSlider;
+    [SerializeField] private TextMeshProUGUI _boidAmountText;
+    
     [SerializeField] private Slider _widthSlider;
     [SerializeField] private TextMeshProUGUI _widthText;
     [SerializeField] private Slider _heightSlider;
@@ -39,6 +42,9 @@ public class UIController : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _powerSeparationText;
     [SerializeField] private Slider _perceptionRadiusSeparationSlider;
     [SerializeField] private TextMeshProUGUI _perceptionRadiusSeparationText;
+    
+    [SerializeField] private Slider _cameraDistanceSlider;
+    [SerializeField] private TextMeshProUGUI _cameraDistanceText;
 
     private bool _isUIHidden = false;
     
@@ -53,6 +59,8 @@ public class UIController : MonoBehaviour
         _resetValuesButton.onClick.AddListener(ResetValues);
         _make3DButton.onClick.AddListener(RestartBoid);
         
+        _boidAmountSlider.onValueChanged.AddListener(SetBoidAmount);
+        
         _widthSlider.onValueChanged.AddListener(SetWidth);
         _heightSlider.onValueChanged.AddListener(SetHeight);
         _depthSlider.onValueChanged.AddListener(SetDepth);
@@ -66,6 +74,8 @@ public class UIController : MonoBehaviour
         _perceptionRadiusCohesionSlider.onValueChanged.AddListener(SetPerceptionRadiusCohesion);
         _powerSeparationSlider.onValueChanged.AddListener(SetPowerSeparation);
         _perceptionRadiusSeparationSlider.onValueChanged.AddListener(SetPerceptionRadiusSeparation);
+        
+        _cameraDistanceSlider.onValueChanged.AddListener(SetCameraDistance);
     }
 
     private void OnDisable()
@@ -73,6 +83,8 @@ public class UIController : MonoBehaviour
         _hideUIButton.onClick.RemoveListener(HideAllUI);
         _resetValuesButton.onClick.RemoveListener(ResetValues);
         _make3DButton.onClick.RemoveListener(RestartBoid);
+        
+        _boidAmountSlider.onValueChanged.RemoveListener(SetBoidAmount);
         
         _widthSlider.onValueChanged.RemoveListener(SetWidth);
         _heightSlider.onValueChanged.RemoveListener(SetHeight);
@@ -87,6 +99,8 @@ public class UIController : MonoBehaviour
         _perceptionRadiusCohesionSlider.onValueChanged.RemoveListener(SetPerceptionRadiusCohesion);
         _powerSeparationSlider.onValueChanged.RemoveListener(SetPowerSeparation);
         _perceptionRadiusSeparationSlider.onValueChanged.RemoveListener(SetPerceptionRadiusSeparation);
+        
+        _cameraDistanceSlider.onValueChanged.RemoveListener(SetCameraDistance);
     }
     
     private void HideAllUI()
@@ -98,10 +112,13 @@ public class UIController : MonoBehaviour
         _hideUIButtonText.text = _isUIHidden ? "Show UI" : "Hide UI";
     }
 
-    private void RestartBoid() => GameController.Instance.RestartBoid();
+    private void RestartBoid() => GameController.Instance.RestartBoid(false);
     private void ResetValues()
     {
         GameController.Instance.ResetValues();
+        
+        SetBoidAmount(GameController.Instance.GetBoidAmount());
+        _boidAmountSlider.value = GameController.Instance.GetBoidAmount();
         
         SetWidth(GameController.Instance.GetWidth());
         _widthSlider.value = GameController.Instance.GetWidth();
@@ -125,6 +142,16 @@ public class UIController : MonoBehaviour
         _powerSeparationSlider.value = GameController.Instance.GetPowerSeparation();
         SetPerceptionRadiusSeparation(GameController.Instance.GetPerceptionRadiusSeparation());
         _perceptionRadiusSeparationSlider.value = GameController.Instance.GetPerceptionRadiusSeparation();
+        
+        SetCameraDistance(GameController.Instance.GetCameraDistance());
+        _cameraDistanceSlider.value = GameController.Instance.GetCameraDistance();
+    }
+
+    private void SetBoidAmount(float value)
+    {
+        GameController.Instance.SetBoidAmount((int)value);
+        
+        _boidAmountText.text = "Boid Amount: " + value.ToString("0", System.Globalization.CultureInfo.InvariantCulture);
     }
     
     private void SetWidth(float value)
@@ -152,14 +179,14 @@ public class UIController : MonoBehaviour
     {
         GameController.Instance.SetMaxSpeed(value);
         
-        _maxSpeedText.text = "MaxSpeed: " + value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+        _maxSpeedText.text = "Max Speed: " + value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
     }
 
     private void SetMaxForce(float value)
     {
         GameController.Instance.SetMaxForce(value);
         
-        _maxForceText.text = "MaxForce: " + value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+        _maxForceText.text = "Max Force: " + value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
     }
 
     private void SetPowerAlignment(float value)
@@ -202,6 +229,13 @@ public class UIController : MonoBehaviour
         GameController.Instance.SetPerceptionRadiusSeparation(value);
         
         _perceptionRadiusSeparationText.text = "PerceptionRadius: " + value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
+    }
+
+    private void SetCameraDistance(float value)
+    {
+        GameController.Instance.SetCameraDistance(value);
+        
+        _cameraDistanceText.text = "Camera Distance: " + value.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture);
     }
 
     public void ChangeMake3DButtonText(bool is2D)

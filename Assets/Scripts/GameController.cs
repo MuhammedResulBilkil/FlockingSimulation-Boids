@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cinemachine;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -8,11 +9,12 @@ public class GameController : MonoBehaviour
     
     [SerializeField] private Transform _boidsParent;
 
-    [SerializeField] private GameObject _camera2D;
-    [SerializeField] private GameObject _camera3D;
+    [SerializeField] private CinemachineVirtualCamera _mainCinemachineVirtualCamera;
     
     [SerializeField] private Boid3D _boid3DPrefab;
     [SerializeField] private Boid2D _boid2DPrefab;
+
+    [SerializeField] private int _boidAmount;
     
     [SerializeField] private float _width;
     [SerializeField] private float _height;
@@ -25,8 +27,13 @@ public class GameController : MonoBehaviour
     [SerializeField] private float _perceptionRadiusCohesion;
     [SerializeField] private float _powerSeparation;
     [SerializeField] private float _perceptionRadiusSeparation;
+    [SerializeField] private float _cameraDistance;
     
     [SerializeField] private bool _is2D;
+
+    private CinemachineFramingTransposer _mainCameraFramingTransposer;
+    
+    private int _defaultSpawnAmount;
     
     private float _defaultWidth;
     private float _defaultHeight;
@@ -39,6 +46,7 @@ public class GameController : MonoBehaviour
     private float _defaultPerceptionRadiusCohesion;
     private float _defaultPowerSeparation;
     private float _defaultPerceptionRadiusSeparation;
+    private float _defaultCameraDistance;
 
     private List<Boid3D> _boids3D = new();
     private List<Boid2D> _boids2D = new();
@@ -46,7 +54,11 @@ public class GameController : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+
+        _defaultSpawnAmount = _boidAmount;
         
+        _mainCameraFramingTransposer = _mainCinemachineVirtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+
         _defaultWidth = _width;
         _defaultHeight = _height;
         _defaultDepth = _depth;
@@ -58,6 +70,10 @@ public class GameController : MonoBehaviour
         _defaultPerceptionRadiusCohesion = _perceptionRadiusCohesion;
         _defaultPowerSeparation = _powerSeparation;
         _defaultPerceptionRadiusSeparation = _perceptionRadiusSeparation;
+
+        _defaultCameraDistance = _cameraDistance;
+        
+        SetCameraDistance(_cameraDistance);
     }
 
     void Start()
@@ -68,11 +84,14 @@ public class GameController : MonoBehaviour
             Spawn3DBoids();
     }
 
-    public void RestartBoid()
+    public void RestartBoid(bool isBoidAmountChanged)
     {
-        _is2D = !_is2D;
-        UIController.Instance.ChangeMake3DButtonText(_is2D);
-        
+        if (!isBoidAmountChanged)
+        {
+            _is2D = !_is2D;
+            UIController.Instance.ChangeMake3DButtonText(_is2D);
+        }
+
         for (int i = 0; i < _boids2D.Count; i++)
             Destroy(_boids2D[i].gameObject);
         
@@ -90,10 +109,7 @@ public class GameController : MonoBehaviour
     
     private void Spawn2DBoids()
     {
-        _camera2D.SetActive(true);
-        _camera3D.SetActive(false);
-
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < _boidAmount; i++)
         {
             Vector2 randomVector2 = Random.insideUnitCircle;
             
@@ -105,10 +121,7 @@ public class GameController : MonoBehaviour
     
     private void Spawn3DBoids()
     {
-        _camera2D.SetActive(false);
-        _camera3D.SetActive(true);
-
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < _boidAmount; i++)
         {
             Vector3 randomVector3 = Random.insideUnitSphere;
             
@@ -120,6 +133,8 @@ public class GameController : MonoBehaviour
 
     public void ResetValues()
     {
+        _boidAmount = _defaultSpawnAmount;
+        
         _width = _defaultWidth;
         _height = _defaultHeight;
         _depth = _defaultDepth;
@@ -131,8 +146,19 @@ public class GameController : MonoBehaviour
         _perceptionRadiusCohesion = _defaultPerceptionRadiusCohesion;
         _powerSeparation = _defaultPowerSeparation;
         _perceptionRadiusSeparation = _defaultPerceptionRadiusSeparation;
+        
+        _cameraDistance = _defaultCameraDistance;
+        _mainCameraFramingTransposer.m_CameraDistance = _cameraDistance;
     }
     
+    public void SetBoidAmount(int value)
+    {
+        _boidAmount = value;
+        
+        RestartBoid(true);
+    }
+
+    public int GetBoidAmount() => _boidAmount;
     public float GetMaxSpeed() => _maxSpeed;
     public void SetMaxSpeed(float value) => _maxSpeed = value;
     public float GetMaxForce() => _maxForce;
@@ -155,7 +181,13 @@ public class GameController : MonoBehaviour
     public float GetHeight() => _height;
     public void SetDepth(float value) => _depth = value;
     public float GetDepth() => _depth;
-    
+    public void SetCameraDistance(float value)
+    {
+        _cameraDistance = value;
+        _mainCameraFramingTransposer.m_CameraDistance = _cameraDistance;
+    }
+    public float GetCameraDistance() => _cameraDistance;
+
     public List<Boid3D> GetBoids3D() => _boids3D;
     public List<Boid2D> GetBoids2D() => _boids2D;
 }
