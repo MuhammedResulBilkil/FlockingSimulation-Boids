@@ -5,4 +5,4 @@
  
  
  Implementation:
-![Flocking_Simulation_Gameplay](https://raw.githubusercontent.com/MuhammedResulBilkil/FlockingSimulation-Boids/master/Recordings/Boids_001.gif)
+![Flocking_Simulation_Gameplay](https://github.com/MuhammedResulBilkil/FlockingSimulation-Boids/blob/master/Recordings/Boids_001.gif)
