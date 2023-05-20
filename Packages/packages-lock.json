@@ -113,21 +113,6 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
-    "com.unity.physics": {
-      "version": "1.0.0-pre.65",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.burst": "1.8.3",
-        "com.unity.collections": "2.1.0-pre.18",
-        "com.unity.entities": "1.0.0-pre.65",
-        "com.unity.mathematics": "1.2.6",
-        "com.unity.test-framework": "1.3.2",
-        "com.unity.modules.imgui": "1.0.0",
-        "com.unity.modules.jsonserialize": "1.0.0"
-      },
-      "url": "https://packages.unity.com"
-    },
     "com.unity.probuilder": {
       "version": "5.0.7",
       "depth": 0,
@@ -147,7 +132,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.recorder": {
-      "version": "4.0.0",
+      "version": "4.0.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {
