@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 8510233388700333153}
   - component: {fileID: 4154593740229926423}
   - component: {fileID: 6734425970090568600}
-  - component: {fileID: -6025920128602889474}
   m_Layer: 0
   m_Name: Boid_3D_Entity
   m_TagString: Untagged
@@ -95,17 +94,5 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 22c4ccf7d35e4a009408c3b72bafb5da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &-6025920128602889474
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4513114319123976008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4a4a043f6e4a4d6eb2add3023e3c5d46, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

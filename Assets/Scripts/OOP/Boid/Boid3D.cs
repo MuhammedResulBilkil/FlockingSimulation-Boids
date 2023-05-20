@@ -15,8 +15,6 @@ public class Boid3D : MonoBehaviour
         Edges();
         Flock();
         MoveForward();
-        
-        _acceleration = Vector3.zero;
     }
 
     private void MoveForward()
@@ -28,6 +26,8 @@ public class Boid3D : MonoBehaviour
         
         _velocity += _acceleration;
         _velocity = Vector3.ClampMagnitude(_velocity, GetMaxSpeed());
+        
+        _acceleration = Vector3.zero;
     }
 
     private void Edges()
